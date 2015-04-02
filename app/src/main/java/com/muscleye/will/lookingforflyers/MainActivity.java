@@ -1,24 +1,30 @@
 package com.muscleye.will.lookingforflyers;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity
 {
     String str1;
     TextView output;
+    ProgressBar pb;
+    List<MyTask> tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,48 +35,15 @@ public class MainActivity extends ActionBarActivity
         output = (TextView) findViewById(R.id.textView);
         output.setMovementMethod(new ScrollingMovementMethod());
 
+        pb = (ProgressBar) findViewById(R.id.progressBar1);
+        pb.setVisibility(View.INVISIBLE);
+
+        tasks = new ArrayList<>();
+
         //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.baidu.com"));
         //startActivity(browserIntent);
         Log.d("url", "start getPage");
 
-        for (int i = 0; i < 100; i++)
-        {
-            updateDisplay("line " + i);
-        }
-
-    }
-
-    public static String getPage(String uri)
-    {
-        BufferedReader reader = null;
-
-        try {
-            URL url = new URL(uri);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-            StringBuilder sb = new StringBuilder();
-            reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-            String line;
-            while ((line = reader.readLine()) != null)
-            {
-                sb.append(line + "\n");
-            }
-
-            return sb.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            if (reader != null)
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-        }
     }
 
     @Override
@@ -85,17 +58,99 @@ public class MainActivity extends ActionBarActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        //int id = item.getItemId();
 
-        if (item.getItemId() == R.id.action_settings)
+        if (item.getItemId() == R.id.test)
         {
-            updateDisplay("Task Done!");
+            if (isOnline())
+            {
+                requestData("http://services.hanselandpetal.com/feeds/flowers.xml");
+            }
+            else
+            {
+                Toast.makeText(this, "Network isn't available",  Toast.LENGTH_LONG).show();
+            }
         }
         return false;
+    }
+
+    private void requestData(String uri)
+    {
+        MyTask task = new MyTask();
+        task.execute(uri);//not Parallel processing
+        //task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "p1", "p2", "p3");//Parallel
     }
 
     protected void updateDisplay(String message)
     {
         output.append(message +"\n");
+    }
+
+    protected boolean isOnline()
+    {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private class MyTask extends AsyncTask<String, String, String>
+    {
+        @Override
+        protected void onPreExecute()
+        {
+            updateDisplay("Starting task");
+
+            if (tasks.size() == 0)
+            {
+                pb.setVisibility(View.VISIBLE);
+            }
+            tasks.add(this);
+        }
+
+        @Override
+        protected String doInBackground(String... params)
+        {
+            String content = HttpManager.getData(params[0]);
+            return content;
+            /*
+            for (int i = 0; i < params.length; i++)
+            {
+                publishProgress("Working with " + params[i]);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            // will be send to onPostExecute String
+            return "Task Complete";
+            */
+        }
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            // able to the main thread
+            updateDisplay(result);
+
+            tasks.remove(this);
+            if (tasks.size() == 0)
+            {
+                pb.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values)
+        {
+            updateDisplay(values[0]);
+        }
     }
 }
