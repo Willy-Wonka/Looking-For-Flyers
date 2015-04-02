@@ -63,7 +63,7 @@ public class MainActivity extends ActionBarActivity
         {
             if (isOnline())
             {
-                requestData("http://services.hanselandpetal.com/feeds/flowers.xml");
+                requestData("https://local.flyerservices.com/LCL/RCSSW/en/a27b7bfe-792f-43dd-85cd-b61f11604509/Page?storeId=7a19d154-9daf-4a1a-8e74-27003bce1ab1");
             }
             else
             {
