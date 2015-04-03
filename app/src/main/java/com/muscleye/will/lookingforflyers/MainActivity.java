@@ -14,10 +14,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.muscleye.will.lookingforflyers.model.Flower;
+import com.muscleye.will.lookingforflyers.parsers.FlowerXMLParser;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class MainActivity extends ActionBarActivity
 {
@@ -25,6 +25,8 @@ public class MainActivity extends ActionBarActivity
     TextView output;
     ProgressBar pb;
     List<MyTask> tasks;
+
+    List<Flower> flowerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,7 @@ public class MainActivity extends ActionBarActivity
         {
             if (isOnline())
             {
-                requestData("https://local.flyerservices.com/LCL/RCSSW/en/a27b7bfe-792f-43dd-85cd-b61f11604509/Page?storeId=7a19d154-9daf-4a1a-8e74-27003bce1ab1");
+                requestData("http://services.hanselandpetal.com/feeds/flowers.xml");
             }
             else
             {
@@ -80,9 +82,16 @@ public class MainActivity extends ActionBarActivity
         //task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "p1", "p2", "p3");//Parallel
     }
 
-    protected void updateDisplay(String message)
+    protected void updateDisplay(String str)
     {
-        output.append(message +"\n");
+//        output.append(str);
+        if (flowerList != null)
+        {
+            for (Flower flower : flowerList)
+            {
+                output.append(flower.getName() + "\n");
+            }
+        }
     }
 
     protected boolean isOnline()
@@ -104,7 +113,7 @@ public class MainActivity extends ActionBarActivity
         @Override
         protected void onPreExecute()
         {
-            updateDisplay("Starting task");
+//            updateDisplay("Starting task");
 
             if (tasks.size() == 0)
             {
@@ -137,8 +146,17 @@ public class MainActivity extends ActionBarActivity
         @Override
         protected void onPostExecute(String result)
         {
-            // able to the main thread
-            updateDisplay(result);
+            // able to go to the main thread
+
+            flowerList = FlowerXMLParser.parseFeed(result);
+            if (flowerList != null)
+            {
+                for (Flower flower : flowerList)
+                {
+                    output.append(flower.getProductId() + "\n" + flower.getName() + "\n");
+                }
+            }
+//            updateDisplay(result);
 
             tasks.remove(this);
             if (tasks.size() == 0)
@@ -150,7 +168,7 @@ public class MainActivity extends ActionBarActivity
         @Override
         protected void onProgressUpdate(String... values)
         {
-            updateDisplay(values[0]);
+//            updateDisplay(values[0]);
         }
     }
 }
