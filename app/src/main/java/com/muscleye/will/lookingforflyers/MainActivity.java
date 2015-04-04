@@ -14,8 +14,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.muscleye.will.lookingforflyers.model.Flower;
-import com.muscleye.will.lookingforflyers.parsers.FlowerXMLParser;
+import com.muscleye.will.lookingforflyers.parsers.FlowerJSONParser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +67,7 @@ public class MainActivity extends ActionBarActivity
         {
             if (isOnline())
             {
-                requestData("http://services.hanselandpetal.com/feeds/flowers.xml");
+                requestData("http://services.hanselandpetal.com/feeds/flowers.json");
             }
             else
             {
@@ -82,7 +84,7 @@ public class MainActivity extends ActionBarActivity
         //task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "p1", "p2", "p3");//Parallel
     }
 
-    protected void updateDisplay(String str)
+    protected void updateDisplay()
     {
 //        output.append(str);
         if (flowerList != null)
@@ -148,15 +150,8 @@ public class MainActivity extends ActionBarActivity
         {
             // able to go to the main thread
 
-            flowerList = FlowerXMLParser.parseFeed(result);
-            if (flowerList != null)
-            {
-                for (Flower flower : flowerList)
-                {
-                    output.append(flower.getProductId() + "\n" + flower.getName() + "\n");
-                }
-            }
-//            updateDisplay(result);
+            flowerList = FlowerJSONParser.parseFeed(result);
+            updateDisplay();
 
             tasks.remove(this);
             if (tasks.size() == 0)
