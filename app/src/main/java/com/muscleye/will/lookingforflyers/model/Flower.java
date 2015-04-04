@@ -1,16 +1,19 @@
 package com.muscleye.will.lookingforflyers.model;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Will on 15-04-02.
  */
 public class Flower
 {
     private int productId;
-    private  String name;
-    private  String category;
-    private  String instruction;
-    private  double price;
-    private  String photo;
+    private String name;
+    private String category;
+    private String instruction;
+    private double price;
+    private String photo;
+    private Bitmap bigmap;
 
     public int getProductId() {
         return productId;
@@ -58,5 +61,13 @@ public class Flower
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public Bitmap getBigmap() {
+        return bigmap;
+    }
+
+    public void setBigmap(Bitmap bigmap) {
+        this.bigmap = bigmap;
     }
 }
