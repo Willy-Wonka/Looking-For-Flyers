@@ -1,12 +1,11 @@
 package com.muscleye.will.lookingforflyers;
 
+import android.app.ListActivity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +20,7 @@ import com.muscleye.will.lookingforflyers.parsers.FlowerJSONParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends ListActivity
 {
     String str1;
     TextView output;
@@ -36,8 +35,8 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         // Initialize the TextView for vertical scrolling
-        output = (TextView) findViewById(R.id.textView);
-        output.setMovementMethod(new ScrollingMovementMethod());
+//        output = (TextView) findViewById(R.id.textView);
+//        output.setMovementMethod(new ScrollingMovementMethod());
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
         pb.setVisibility(View.INVISIBLE);
@@ -86,14 +85,17 @@ public class MainActivity extends ActionBarActivity
 
     protected void updateDisplay()
     {
+        //User FlowerAdapter to display data
+        FlyerAdapter adapter = new FlyerAdapter(this, R.layout.item_flyer, flowerList);
+        setListAdapter(adapter);
 //        output.append(str);
-        if (flowerList != null)
-        {
-            for (Flower flower : flowerList)
-            {
-                output.append(flower.getName() + "\n");
-            }
-        }
+//        if (flowerList != null)
+//        {
+//            for (Flower flower : flowerList)
+//            {
+//                output.append(flower.getName() + "\n");
+//            }
+//        }
     }
 
     protected boolean isOnline()
