@@ -104,7 +104,9 @@ public class FlyerAdapter extends ArrayAdapter<Flower> {
         protected void onPostExecute(FlyerAndView result) {
             //Display flower photo in ImageView widget
             ImageView image = (ImageView) result.view.findViewById(R.id.imageView1);
+//            image.setAlpha(100);
             image.setImageBitmap(result.bitmap);
+            image.setImageAlpha(200);
 //            result.flower.setBigmap(result.bitmap);
             imageCache.put(result.flower.getProductId(), result.bitmap);
         }

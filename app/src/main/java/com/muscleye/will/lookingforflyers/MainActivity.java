@@ -69,6 +69,7 @@ public class MainActivity extends ListActivity
             if (isOnline())
             {
                 requestData("http://services.hanselandpetal.com/feeds/flowers.json");
+                //https://local.flyerservices.com/LCL/RCSSW/en/a27b7bfe-792f-43dd-85cd-b61f11604509/Product/List?tagId=1597&storeId=0c2a5048-cc47-4dcf-99b7-7674345b06c1
             }
             else
             {
